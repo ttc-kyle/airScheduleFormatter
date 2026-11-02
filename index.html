@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Email Formatter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"></div>
+
+  <main class="page">
+    <header class="masthead reveal" style="--index:0">
+      <p class="eyebrow">Draft, format, paste</p>
+      <h1>Email Formatter</h1>
+      <p class="lede">Write your message on the left. Generate clean, email-safe HTML on the right, then paste it into your email.</p>
+    </header>
+
+    <div class="grid">
+      <!-- Draft -->
+      <section class="card reveal" style="--index:1" aria-labelledby="draft-title">
+        <div class="card-head">
+          <h2 id="draft-title">Draft</h2>
+          <span class="tag tag-yellow" id="draft-tag">Draft</span>
+        </div>
+
+        <div class="field">
+          <label for="subject">Subject</label>
+          <input id="subject" type="text" placeholder="Follow-up on your support request" autocomplete="off">
+        </div>
+
+        <div class="ribbon">
+        <div class="toolbar" role="toolbar" aria-label="Formatting">
+          <button type="button" class="tool" data-cmd="bold" title="Bold (Ctrl+B)" aria-label="Bold">
+            <svg viewBox="0 0 256 256" aria-hidden="true"><path d="M80 48h60a40 40 0 0 1 0 80H80zM80 128h72a40 40 0 0 1 0 80H80z"/></svg>
+          </button>
+          <button type="button" class="tool" data-cmd="italic" title="Italic (Ctrl+I)" aria-label="Italic">
+            <svg viewBox="0 0 256 256" aria-hidden="true"><path d="M152 48h-48M152 208h-48M160 48l-64 160"/></svg>
+          </button>
+          <button type="button" class="tool" data-cmd="underline" title="Underline (Ctrl+U)" aria-label="Underline">
+            <svg viewBox="0 0 256 256" aria-hidden="true"><path d="M60 40v76a68 68 0 0 0 136 0V40M40 220h176"/></svg>
+          </button>
+          <span class="menu-wrap">
+            <button type="button" class="tool" id="color-btn" title="Font color" aria-label="Font color" aria-haspopup="true" aria-expanded="false">
+              <svg viewBox="0 0 256 256" aria-hidden="true"><path d="M56 192L128 48l72 144M84 140h88"/></svg>
+              <span class="color-bar" id="color-bar"></span>
+            </button>
+            <div class="popover" id="color-pop" role="dialog" aria-label="Font color" hidden>
+              <div class="swatches" id="color-swatches"></div>
+              <div class="color-row">
+                <input type="color" id="color-native" value="#222222" aria-label="Pick a color">
+                <input type="text" id="color-hex" class="color-hex" placeholder="#1F6C9F" maxlength="7" spellcheck="false" autocomplete="off" aria-label="Hex color code">
+                <button type="button" class="btn btn-small" id="color-apply">Apply</button>
+              </div>
+            </div>
+          </span>
+          <span class="sep" aria-hidden="true"></span>
+          <button type="button" class="tool" data-cmd="insertUnorderedList" title="Bulleted list" aria-label="Bulleted list">
+            <svg viewBox="0 0 256 256" aria-hidden="true"><path d="M96 64h128M96 128h128M96 192h128M40 64h4M40 128h4M40 192h4"/></svg>
+          </button>
+          <button type="button" class="tool" data-cmd="insertOrderedList" title="Numbered list" aria-label="Numbered list">
+            <svg viewBox="0 0 256 256" aria-hidden="true"><path d="M104 64h120M104 128h120M104 192h120M40 52l16-8v56M36 160c0-10 8-16 18-16s18 6 18 14c0 14-34 22-36 38h38"/></svg>
+          </button>
+          <span class="menu-wrap">
+            <button type="button" class="tool" id="ls-btn" title="Line spacing" aria-label="Line spacing" aria-haspopup="true" aria-expanded="false">
+              <svg viewBox="0 0 256 256" aria-hidden="true"><path d="M48 56v144M28 76l20-20 20 20M28 180l20 20 20-20M104 72h120M104 128h120M104 184h120"/></svg>
+            </button>
+            <div class="menu" id="ls-menu" role="menu" aria-label="Line spacing" hidden>
+              <button type="button" role="menuitem" data-lh="1">Single</button>
+              <button type="button" role="menuitem" data-lh="1.15">1.15</button>
+              <button type="button" role="menuitem" data-lh="">1.5 <span>default</span></button>
+              <button type="button" role="menuitem" data-lh="2">Double</button>
+            </div>
+          </span>
+          <span class="sep" aria-hidden="true"></span>
+          <button type="button" class="tool" id="link-btn" title="Link (Ctrl+K)" aria-label="Add link">
+            <svg viewBox="0 0 256 256" aria-hidden="true"><path d="M104 152l48-48M124 80l20-20a40 40 0 0 1 56 56l-20 20M132 176l-20 20a40 40 0 0 1-56-56l20-20"/></svg>
+          </button>
+          <button type="button" class="tool" id="img-btn" title="Insert image" aria-label="Insert image">
+            <svg viewBox="0 0 256 256" aria-hidden="true"><path d="M48 48h160a8 8 0 0 1 8 8v144a8 8 0 0 1-8 8H48a8 8 0 0 1-8-8V56a8 8 0 0 1 8-8zM40 168l48-48 40 40 32-32 56 56M164 100h.01"/></svg>
+          </button>
+          <input type="file" id="img-input" accept="image/png,image/jpeg,image/gif,image/webp" hidden>
+          <button type="button" class="tool" data-cmd="removeFormat" title="Clear formatting" aria-label="Clear formatting">
+            <svg viewBox="0 0 256 256" aria-hidden="true"><path d="M88 48h128M152 48l-48 160M72 208h96M40 40l176 176"/></svg>
+          </button>
+          <span class="hints"><kbd>Ctrl</kbd><kbd>B</kbd> <kbd>Ctrl</kbd><kbd>I</kbd> <kbd>Ctrl</kbd><kbd>K</kbd></span>
+        </div>
+
+        <form class="linkbar" id="linkbar" hidden>
+          <input id="link-url" type="text" placeholder="https://example.com" aria-label="Link address" autocomplete="off">
+          <button type="submit" class="btn btn-small">Apply</button>
+          <button type="button" class="btn btn-small btn-ghost" id="link-cancel">Cancel</button>
+        </form>
+        </div>
+
+        <div id="editor" class="editor" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Email body" data-placeholder="Hi,&#10;&#10;Thanks for reaching out. Here is where things stand..." spellcheck="true"></div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-danger" id="clear">Clear draft</button>
+          <span class="saved" id="saved" aria-live="polite">Saved in this browser</span>
+        </div>
+      </section>
+
+      <!-- Output -->
+      <section class="card reveal" style="--index:2" aria-labelledby="out-title">
+        <div class="card-head">
+          <h2 id="out-title">Output</h2>
+          <span class="tag tag-blue" id="out-tag">Waiting</span>
+        </div>
+
+        <div class="empty" id="empty">
+          <svg viewBox="0 0 256 256" aria-hidden="true"><path d="M48 56h160a8 8 0 0 1 8 8v128a8 8 0 0 1-8 8H48a8 8 0 0 1-8-8V64a8 8 0 0 1 8-8zM40 68l88 68 88-68"/></svg>
+          <p>Your formatted email appears here.</p>
+          <p class="muted">Start typing on the left and the HTML updates as you go.</p>
+        </div>
+
+        <div id="result" hidden>
+          <div class="out-controls">
+            <div class="segmented" role="tablist" aria-label="Output view">
+              <button type="button" role="tab" aria-selected="true" data-view="preview" class="seg is-active">Preview</button>
+              <button type="button" role="tab" aria-selected="false" data-view="source" class="seg">Source</button>
+            </div>
+            <label class="check"><input type="checkbox" id="inc-subject"> Include subject line</label>
+          </div>
+
+          <div class="window">
+            <div class="window-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div id="preview" class="preview"></div>
+            <pre id="source" class="source" hidden></pre>
+          </div>
+
+          <div class="actions">
+            <button type="button" class="btn" id="copy-rich">Copy for pasting</button>
+            <span class="saved" id="copied" aria-live="polite"></span>
+          </div>
+          <p class="note"><strong>Copy for pasting</strong> copies the HTML source. Paste it into your email tool's HTML or code view.</p>
+        </div>
+      </section>
+    </div>
+
+    <footer class="foot reveal" style="--index:3">Everything stays in your browser. Nothing is uploaded or sent anywhere.</footer>
+  </main>
+
+  <dialog id="confirm-clear" class="dialog" aria-labelledby="confirm-title" aria-describedby="confirm-body">
+    <span class="tag tag-red">Cannot be undone</span>
+    <h2 id="confirm-title">Clear this draft?</h2>
+    <p id="confirm-body">Your subject, email body, images and the generated HTML will be permanently deleted.</p>
+    <div class="dialog-actions">
+      <button type="button" class="btn btn-ghost" id="confirm-cancel" autofocus>Keep draft</button>
+      <button type="button" class="btn btn-danger-solid" id="confirm-yes">Yes, clear everything</button>
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>

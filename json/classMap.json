@@ -273,7 +273,7 @@
   "QR": {
     "Economy": "Y, K, B, S, M, L, V, S, N",
     "Premium Economy": "",
-    "Business": "I, D, C, J",
+    "Business": "I, D, C, J, R",
     "First": ""
   },
   "RJ": {
@@ -299,6 +299,12 @@
     "Premium Economy": "G, E, N",
     "Business": "J, C, D, Z, P",
     "First": ""
+  },
+  "SQ": {
+    "Economy": "Y, B, E, M, H, W, Q, N, K, V",
+    "Premium Economy": "S, T, L, P",
+    "Business": "J, C, D, Z",
+    "First": "F, A"
   },
   "TK": {
     "Economy": "Y, B, M, A, H, S, O, E, Q, T, L, V, P, W, U, X, N, G",
