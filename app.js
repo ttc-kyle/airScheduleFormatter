@@ -157,17 +157,28 @@
 
   /* ---------- Draft persistence ---------- */
 
+  // Drafts live in sessionStorage (cleared when the tab closes) and expire after DRAFT_TTL_MS,
+  // so a draft never outlives the agent's session or carries over to the next person.
+  var DRAFT_TTL_MS = 45 * 60 * 1000;
+
+  // Remove drafts left in localStorage by earlier versions that persisted indefinitely.
+  try { localStorage.removeItem(STORE_KEY); } catch (e) { /* ignore */ }
+
   function save() {
     try {
-      localStorage.setItem(STORE_KEY, JSON.stringify({ subject: subjectEl.value, body: editor.innerHTML }));
-      $('saved').textContent = 'Saved in this browser';
+      sessionStorage.setItem(STORE_KEY, JSON.stringify({ subject: subjectEl.value, body: editor.innerHTML, savedAt: Date.now() }));
+      $('saved').textContent = 'Saved in this tab for 45 min';
     } catch (e) { $('saved').textContent = ''; }
   }
 
   function restore() {
     try {
-      var d = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
+      var d = JSON.parse(sessionStorage.getItem(STORE_KEY) || 'null');
       if (!d) return;
+      if (!d.savedAt || Date.now() - d.savedAt > DRAFT_TTL_MS) {
+        sessionStorage.removeItem(STORE_KEY);
+        return;
+      }
       subjectEl.value = d.subject || '';
       editor.innerHTML = sanitizeFragment(d.body || '');
     } catch (e) { /* storage unavailable */ }
@@ -597,7 +608,7 @@
     editor.innerHTML = '';
     clearTimeout(updateTimer);
     update();
-    try { localStorage.removeItem(STORE_KEY); } catch (e) { /* ignore */ }
+    try { sessionStorage.removeItem(STORE_KEY); } catch (e) { /* ignore */ }
     $('saved').textContent = '';
   });
 
