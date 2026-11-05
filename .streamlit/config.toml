@@ -1,0 +1,10 @@
+[client]
+# Hides the toolbar menu (GitHub / deploy / rerun links) for end users, in addition to the CSS in theme.py.
+toolbarMode = "minimal"
+
+[theme]
+base = "light"
+primaryColor = "#111111"
+backgroundColor = "#FBFBFA"
+secondaryBackgroundColor = "#F7F6F3"
+textColor = "#2F3437"
