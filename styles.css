@@ -217,16 +217,6 @@ h2 { font-size: 26px; line-height: 1.1; letter-spacing: -0.02em; }
 .tool.is-on { background: var(--bone); border-color: var(--line); color: var(--ink); }
 .tool svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 20; stroke-linecap: round; stroke-linejoin: round; }
 .sep { width: 1px; height: 18px; background: var(--line); margin: 0 6px; }
-.hints { margin-left: auto; display: flex; gap: 2px; align-items: center; }
-kbd {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--muted);
-  background: var(--bone);
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  padding: 1px 5px;
-}
 
 .linkbar { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
 .linkbar[hidden] { display: none; }
@@ -252,6 +242,7 @@ kbd {
   border-radius: 8px;
   outline: none;
   overflow-wrap: anywhere;
+  font-size: 14px; /* matches the 14px default in the generated email, so sizes look the same in both */
 }
 .editor:focus { border-color: #C9C8C4; background: var(--surface); }
 .editor:empty::before {
@@ -374,5 +365,4 @@ kbd {
   .page { padding: 48px 16px 40px; }
   .card { padding: 24px; }
   .editor, .window { min-height: 420px; }
-  .hints { display: none; }
 }

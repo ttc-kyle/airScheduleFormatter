@@ -44,6 +44,17 @@
             <svg viewBox="0 0 256 256" aria-hidden="true"><path d="M60 40v76a68 68 0 0 0 136 0V40M40 220h176"/></svg>
           </button>
           <span class="menu-wrap">
+            <button type="button" class="tool" id="fs-btn" title="Font size" aria-label="Font size" aria-haspopup="true" aria-expanded="false">
+              <svg viewBox="0 0 256 256" aria-hidden="true"><path d="M32 208L88 64l56 144M52 160h72M168 208l28-72 28 72M178 184h36"/></svg>
+            </button>
+            <div class="menu" id="fs-menu" role="menu" aria-label="Font size" hidden>
+              <button type="button" role="menuitem" data-fs="12">Small <span>12 px</span></button>
+              <button type="button" role="menuitem" data-fs="14">Normal <span>14 px</span></button>
+              <button type="button" role="menuitem" data-fs="18">Large <span>18 px</span></button>
+              <button type="button" role="menuitem" data-fs="24">Huge <span>24 px</span></button>
+            </div>
+          </span>
+          <span class="menu-wrap">
             <button type="button" class="tool" id="color-btn" title="Font color" aria-label="Font color" aria-haspopup="true" aria-expanded="false">
               <svg viewBox="0 0 256 256" aria-hidden="true"><path d="M56 192L128 48l72 144M84 140h88"/></svg>
               <span class="color-bar" id="color-bar"></span>
@@ -86,7 +97,6 @@
           <button type="button" class="tool" data-cmd="removeFormat" title="Clear formatting" aria-label="Clear formatting">
             <svg viewBox="0 0 256 256" aria-hidden="true"><path d="M88 48h128M152 48l-48 160M72 208h96M40 40l176 176"/></svg>
           </button>
-          <span class="hints"><kbd>Ctrl</kbd><kbd>B</kbd> <kbd>Ctrl</kbd><kbd>I</kbd> <kbd>Ctrl</kbd><kbd>K</kbd></span>
         </div>
 
         <form class="linkbar" id="linkbar" hidden>

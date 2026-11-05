@@ -27,6 +27,15 @@
   }
   var allowColor = true;
 
+  var DEFAULT_SIZE = 14;
+  // Only whole-number px sizes from 10 to 40 survive; anything else is dropped.
+  function safeSize(v) {
+    var m = /^(\d{1,2})(?:\.\d+)?px$/.exec((v || '').trim().toLowerCase());
+    var n = m ? parseInt(m[1], 10) : 0;
+    return n >= 10 && n <= 40 ? n : 0;
+  }
+  var allowSize = true;
+
   var $ = function (id) { return document.getElementById(id); };
   var editor = $('editor'), subjectEl = $('subject');
   var generatedHtml = '';
@@ -73,7 +82,14 @@
     if (node.nodeType === 3) return esc(node.nodeValue.replace(/[\s ]+/g, ' '));
     if (node.nodeType !== 1 || DROP[node.tagName]) return '';
     var inner = kids(node, inline);
-    return withColor(node, inlineTag(node, inner));
+    return withSize(node, withColor(node, inlineTag(node, inner)));
+  }
+
+  // Wraps an element's output in a font-size span. The default size is already set on the wrapper, so it needs no span.
+  function withSize(node, html) {
+    if (!allowSize || !html) return html;
+    var s = safeSize(node.style && node.style.fontSize);
+    return s && s !== DEFAULT_SIZE ? '<span style="font-size:' + s + 'px;">' + html + '</span>' : html;
   }
 
   function inlineTag(node, inner) {
@@ -150,9 +166,9 @@
   // keepColor=false drops text colors, used for content pasted in from outside the editor.
   function sanitizeFragment(html, keepColor) {
     var doc = new DOMParser().parseFromString(html, 'text/html');
-    var prev = allowColor;
-    allowColor = keepColor !== false;
-    try { return blocks(doc.body, ''); } finally { allowColor = prev; }
+    var prev = allowColor, prevSize = allowSize;
+    allowColor = allowSize = keepColor !== false;
+    try { return blocks(doc.body, ''); } finally { allowColor = prev; allowSize = prevSize; }
   }
 
   /* ---------- Draft persistence ---------- */
@@ -201,6 +217,8 @@
     });
     var cur = currentLineHeight();
     lsMenu.querySelectorAll('button').forEach(function (b) { b.classList.toggle('is-on', b.dataset.lh === cur); });
+    var curSize = currentFontSize();
+    fsMenu.querySelectorAll('button').forEach(function (b) { b.classList.toggle('is-on', +b.dataset.fs === curSize); });
     var c = DEFAULT_COLOR;
     try { c = safeColor(document.queryCommandValue('foreColor')) || c; } catch (e) { /* ignore */ }
     // Uncolored text reports the editor's own CSS color, which maps to the output default.
@@ -287,15 +305,63 @@
     lsMenu.hidden = !open;
     lsBtn.setAttribute('aria-expanded', open);
   }
-  lsBtn.addEventListener('click', function () { setColorPop(false); setMenu(lsMenu.hidden); });
+  lsBtn.addEventListener('click', function () { setColorPop(false); setFsMenu(false); setMenu(lsMenu.hidden); });
   lsMenu.querySelectorAll('button').forEach(function (b) {
     b.addEventListener('mousedown', function (e) { e.preventDefault(); });
     b.addEventListener('click', function () { setMenu(false); applyLineHeight(b.dataset.lh); });
   });
-  document.addEventListener('mousedown', function (e) {
-    if (!e.target.closest('.menu-wrap')) { setMenu(false); setColorPop(false); }
+
+  /* Font size: Chrome's fontSize command emits a span with a size keyword; each new span is rewritten to the chosen px size. */
+  var fsBtn = $('fs-btn'), fsMenu = $('fs-menu');
+  var pendingSize = DEFAULT_SIZE;
+
+  function setFsMenu(open) {
+    fsMenu.hidden = !open;
+    fsBtn.setAttribute('aria-expanded', open);
+  }
+
+  function currentFontSize() {
+    var sel = window.getSelection();
+    if (!sel.rangeCount || !editor.contains(sel.anchorNode)) return 0;
+    var el = sel.anchorNode.nodeType === 1 ? sel.anchorNode : sel.anchorNode.parentNode;
+    return Math.round(parseFloat(getComputedStyle(el).fontSize)) || 0;
+  }
+
+  // Style-only rewrite (no node moves), so the selection and caret are untouched.
+  function normalizeSizes() {
+    editor.querySelectorAll('span[style*="font-size"]').forEach(function (s) {
+      if (s.style.fontSize.indexOf('xxx-large') !== -1) s.style.fontSize = pendingSize + 'px';
+    });
+    // With nothing selected, Chrome wraps the next typed text in <font size="7"> instead of a span.
+    editor.querySelectorAll('font[size="7"]').forEach(function (f) { f.style.fontSize = pendingSize + 'px'; });
+  }
+
+  function applyFontSize(px) {
+    pendingSize = px;
+    editor.focus();
+    if (lastRange) {
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(lastRange);
+    }
+    document.execCommand('styleWithCSS', false, true);
+    document.execCommand('fontSize', false, '7');
+    document.execCommand('styleWithCSS', false, false);
+    normalizeSizes();
+    refreshToolbar();
+    onChange();
+  }
+
+  fsBtn.addEventListener('click', function () { setMenu(false); setColorPop(false); setFsMenu(fsMenu.hidden); });
+  fsMenu.querySelectorAll('button').forEach(function (b) {
+    b.addEventListener('mousedown', function (e) { e.preventDefault(); });
+    b.addEventListener('click', function () { setFsMenu(false); applyFontSize(+b.dataset.fs); });
   });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { setMenu(false); setColorPop(false); } });
+
+  document.addEventListener('mousedown', function (e) {
+    if (!e.target.closest('.menu-wrap')) { setMenu(false); setFsMenu(false); setColorPop(false); }
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { setMenu(false); setFsMenu(false); setColorPop(false); } });
 
   /* Font color: preset swatches, the browser's native picker, and a hex field */
   var colorBtn = $('color-btn'), colorBar = $('color-bar'), colorPop = $('color-pop');
@@ -346,7 +412,7 @@
     onChange();
   }
 
-  colorBtn.addEventListener('click', function () { setMenu(false); setColorPop(colorPop.hidden); });
+  colorBtn.addEventListener('click', function () { setMenu(false); setFsMenu(false); setColorPop(colorPop.hidden); });
   // The native picker fires input continuously while dragging; only commit when it closes.
   colorNative.addEventListener('input', function () { colorHex.value = colorNative.value.toUpperCase(); colorHex.classList.remove('invalid'); });
   colorNative.addEventListener('change', function () { applyColor(colorNative.value); });
@@ -586,6 +652,7 @@
   /* ---------- Clear + change tracking ---------- */
 
   function onChange() {
+    normalizeSizes();
     save();
     scheduleUpdate();
   }
